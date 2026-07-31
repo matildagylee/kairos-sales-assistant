@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "Kairos",
+  "version": "0.3.0",
+  "description": "AI sales copilot for live calls: real-time battlecards, objection handling, vertical proof points, and auto-generated call notes.",
+  "permissions": ["storage", "sidePanel", "tabCapture", "tabs"],
+  "host_permissions": ["https://api.anthropic.com/*", "https://api.deepgram.com/*"],
+  "icons": {
+    "16": "assets/icons/gorgias-logo.png",
+    "48": "assets/icons/gorgias-logo.png",
+    "128": "assets/icons/gorgias-logo.png"
+  },
+  "action": {
+    "default_title": "Open Kairos",
+    "default_icon": {
+      "16": "assets/icons/gorgias-logo.png",
+      "48": "assets/icons/gorgias-logo.png",
+      "128": "assets/icons/gorgias-logo.png"
+    }
+  },
+  "background": {
+    "service_worker": "src/background.js"
+  },
+  "side_panel": {
+    "default_path": "src/sidepanel.html"
+  }
+}

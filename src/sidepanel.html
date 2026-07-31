@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="sidepanel.css" />
+</head>
+<body>
+  <div id="hdr">
+    <img src="../assets/icons/gorgias-logo.png" alt="Gorgias" />
+    <span class="title">Kairos</span>
+    <button id="gear" title="Settings">⚙</button>
+  </div>
+
+  <div id="banner" class="banner" style="display:none">
+    Add your Anthropic API key to enable AI. <a id="banner-open">Open settings</a>
+  </div>
+
+  <div id="settings">
+    <label>Anthropic API key</label>
+    <input id="api-key" type="password" placeholder="sk-ant-..." autocomplete="off" />
+    <div class="hint">Powers the copilot + notes. Stored locally only. <a href="https://console.anthropic.com/settings/keys" target="_blank">Get a key</a>.</div>
+    <label>Deepgram API key (for call notes)</label>
+    <input id="dg-key" type="password" placeholder="Deepgram key..." autocomplete="off" />
+    <div class="hint">Transcribes the call audio. Stored locally only. <a href="https://console.deepgram.com/" target="_blank">Get a key</a> (free tier available).</div>
+    <label>Model</label>
+    <select id="model">
+      <option value="claude-opus-4-8">Opus 4.8 — smartest (default)</option>
+      <option value="claude-sonnet-4-6">Sonnet 4.6 — faster</option>
+      <option value="claude-haiku-4-5">Haiku 4.5 — fastest</option>
+    </select>
+    <button class="save" id="save-settings">Save</button>
+  </div>
+
+  <div id="controls">
+    <div class="row2">
+      <div>
+        <label>Brand on the call</label>
+        <input id="brand" type="text" placeholder="e.g. Allbirds" autocomplete="off" />
+      </div>
+      <div>
+        <label>Vertical</label>
+        <select id="vertical">
+          <option value="">— none —</option>
+          <option value="fashion_apparel">Fashion &amp; Apparel</option>
+          <option value="beauty_cosmetics">Beauty &amp; Cosmetics</option>
+          <option value="food_beverage">Food &amp; Beverage</option>
+          <option value="health_wellness">Health &amp; Wellness</option>
+          <option value="home_garden">Home &amp; Garden</option>
+          <option value="electronics">Electronics</option>
+          <option value="jewelry_accessories">Jewelry &amp; Accessories</option>
+          <option value="pet">Pet</option>
+          <option value="supplements">Supplements</option>
+          <option value="general">Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="row2">
+      <div>
+        <label>Competitor</label>
+        <select id="competitor"><option value="">— none —</option></select>
+      </div>
+      <div>
+        <label>Persona</label>
+        <select id="persona"><option value="">— none —</option></select>
+      </div>
+    </div>
+  </div>
+
+  <div id="tabs">
+    <button data-tab="copilot" class="on">Copilot</button>
+    <button data-tab="notes">Call Notes</button>
+  </div>
+
+  <!-- Copilot view -->
+  <div id="copilot-view">
+    <div id="chat"></div>
+    <div id="suggest"></div>
+    <div id="composer">
+      <textarea id="input" placeholder="Ask anything, e.g. how do I handle the price objection?"></textarea>
+      <button id="send">Send</button>
+    </div>
+  </div>
+
+  <!-- Notes view -->
+  <div id="notes-view" style="display:none">
+    <div id="rec-bar">
+      <button id="rec-btn">● Start notes</button>
+      <span id="rec-status" class="meta"></span>
+    </div>
+    <div id="consent" class="banner" style="display:none">Recording this call for notes. Make sure participants are aware.</div>
+    <div id="notes-out"><div class="empty">Click <strong>Start notes</strong> when you join the call. Notes refresh every ~30s from what's said.</div></div>
+    <details id="transcript-wrap" style="display:none">
+      <summary>Live transcript</summary>
+      <div id="transcript" class="meta"></div>
+    </details>
+    <div id="notes-actions" style="display:none">
+      <button id="copy-notes">Copy notes</button>
+      <button id="refresh-notes">Refresh now</button>
+    </div>
+  </div>
+
+  <script src="../data/foundation.js"></script>
+  <script src="../data/battlecards.js"></script>
+  <script src="../data/proofpoints.js"></script>
+  <script src="../data/roadmap.js"></script>
+  <script src="sidepanel.js"></script>
+</body>
+</html>
