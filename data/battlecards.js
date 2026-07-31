@@ -5,6 +5,27 @@ window.BATTLECARDS = {
     notionUrl: "https://app.notion.com/p/653607270e984de0a66d1cc90d3bc2fa?pvs=1",
     lastEdited: "2026-06-10",
     name: "Zendesk",
+    sayThis: "Zendesk is built for enterprise IT. Gorgias is built for Shopify.",
+    whyWeWinShort: [
+      "Shopify native in every ticket and AI prompt",
+      "Runs 13 Shopify actions autonomously, no human Send",
+      "Always enforces policy; Copilot failed date-math tests",
+      "One AI Agent, two roles, shared state",
+      "Support drives revenue, lifts conversion up to 2.5x"
+    ],
+    theirWeaknessShort: [
+      "Third-party apps sit in sidebar, invisible to AI",
+      "AI stacks seat, Copilot, and overage fees",
+      "Static instructions punt to generic tracking links",
+      "No AI failure reporting; Essentials being deprecated"
+    ],
+    discoveryShort: [
+      "Does your AI read the Shopify order or ask for it?",
+      "How many AI replies still need a human to send?",
+      "Does your AI always refuse out-of-policy returns?",
+      "How many AI products do you juggle in Zendesk?",
+      "Can you pull last week's AI failure report today?"
+    ],
     positioning: "A cross-industry enterprise helpdesk with Shopify bolted on as a sidebar app, not built for commerce.",
     quickDismiss: "Zendesk is built for enterprise IT. Gorgias is built for Shopify brands. The real question is whether your AI reads your Shopify store, or just asks customers for their order number. On Zendesk, orders, refunds, and subscriptions are invisible to the AI, and you stack seat fees, Copilot licenses, and per-resolution overage all at once.",
     whyWeWin: [
@@ -38,6 +59,26 @@ window.BATTLECARDS = {
     notionUrl: "https://app.notion.com/p/a63c471ad4ec4333abd395e174c35d89?pvs=1",
     lastEdited: "2026-06-09",
     name: "Kustomer",
+    sayThis: "Kustomer is a CRM that needs a team. Gorgias is built for ecommerce.",
+    whyWeWinShort: [
+      "Order data flows into macros without leaving ticket",
+      "A support manager owns the AI no-code",
+      "Native agent metrics live, no Tableau export",
+      "Per-resolution pricing, no 8-seat minimum"
+    ],
+    theirWeaknessShort: [
+      "8-seat minimum means paying for empty seats",
+      "Core metrics need external BI tools",
+      "No native TikTok, international voice gaps",
+      "Two-month setup, 15-month time to ROI"
+    ],
+    discoveryShort: [
+      "Can agents pull order data into a macro in-ticket?",
+      "Who fixes a wrong AI answer, manager or engineering?",
+      "Are you reporting productivity natively or exporting to Sheets?",
+      "Does it support TikTok and local international phone numbers?",
+      "When does your Kustomer contract renew and prepay end?"
+    ],
     positioning: "An enterprise CRM-plus-helpdesk that needs a team (and often IT) to run it, retrofitted onto ecommerce.",
     quickDismiss: "Kustomer is a CRM that needs a team to run it. Gorgias Helpdesk puts native Shopify actions and order data into every workflow, and AI Agent resolves questions autonomously without code. Built for ecommerce, not retrofitted from a CRM. And Kustomer charges by seat with an 8-seat minimum, while Gorgias charges per resolution, so you pay when an issue is actually solved.",
     whyWeWin: [
@@ -70,6 +111,25 @@ window.BATTLECARDS = {
     notionUrl: "https://app.notion.com/p/1c0055638d0c423889466cd51a74166f?pvs=1",
     lastEdited: "2026-07-31",
     name: "Gladly",
+    sayThis: "Gladly takes a specialist to run. Gorgias is run by the CX org.",
+    whyWeWinShort: [
+      "No hire needed; configures from existing content",
+      "254 native apps, no dev hours",
+      "No seat minimum, plans from $10 monthly",
+      "Unified reporting in one platform, not two vendors"
+    ],
+    theirWeaknessShort: [
+      "Setup complexity forces hiring a specialist",
+      "Integration gaps become 60-hour dev projects",
+      "Two-year seat minimums make leaving expensive"
+    ],
+    discoveryShort: [
+      "Who keeps automation working and how much of their week?",
+      "Who builds a new AI scenario and how long?",
+      "Which tools force agents to leave the helpdesk?",
+      "What's your contract term and slow-season seat cost?",
+      "Evaluating them as helpdesk or as an AI layer?"
+    ],
     positioning: "A strong enterprise-retail platform built around lifelong customer history that takes a specialist to run.",
     quickDismiss: "Gladly is genuinely strong on enterprise retail and lifelong customer history, but their platform takes a specialist to run: customers keep telling us they had to hire someone, and their AI needs a Guide authored per scenario before it does anything. Gorgias plugs into 254 ecom apps out of the box with no dev hours. Gladly is bought by the CX org; Gorgias is run by it.",
     whyWeWin: [
@@ -101,6 +161,26 @@ window.BATTLECARDS = {
     notionUrl: "https://app.notion.com/p/2481ae2178f580649b52c4d185249438?pvs=1",
     lastEdited: "2026-05-22",
     name: "Siena AI",
+    sayThis: "Siena is an AI layer on a helpdesk. Gorgias is one platform.",
+    whyWeWinShort: [
+      "One platform, one bill, priced per resolution",
+      "Native actions complete the last mile",
+      "Unified reporting with CSAT on AI tickets",
+      "Waits for confirmation before closing tickets"
+    ],
+    theirWeaknessShort: [
+      "Needs a separate helpdesk, so you double-bill",
+      "Per-conversation pricing charges for misfires",
+      "Fails last mile: return labels, Recharge, WMS",
+      "No AI CSAT, leaves solved tickets open"
+    ],
+    discoveryShort: [
+      "What's your all-in cost: Siena plus helpdesk?",
+      "Show me how you pull CSAT for AI conversations?",
+      "What happens when Siena creates a return label?",
+      "How do you find Siena tickets closed unresolved?",
+      "How much time goes to QA and when's renewal?"
+    ],
     positioning: "An empathic AI agent layer (now a multi-agent 'agentic commerce platform') that runs on top of a helpdesk, not a replacement for one.",
     quickDismiss: "Siena does empathic AI well, but it's still an AI layer on top of a helpdesk, so brands pay Siena and their helpdesk at once, and Siena bills $750/mo plus $0.90 per conversation whether or not it's resolved. Where it bites is the last mile: customers tell us it can't create a return label in Shopify, grabs the wrong price in Recharge, doesn't see CSAT, and doesn't close solved tickets. Gorgias is one platform with native actions and per-resolution pricing.",
     whyWeWin: [
@@ -133,6 +213,26 @@ window.BATTLECARDS = {
     notionUrl: "https://app.notion.com/p/2481ae2178f5801496a7df0dd66ba8a8?pvs=1",
     lastEdited: "2026-07-24",
     name: "Yuma AI",
+    sayThis: "Yuma runs on top of a helpdesk. Gorgias is one system.",
+    whyWeWinShort: [
+      "One platform, not a stack split across vendors",
+      "AI embedded with native live ticket data",
+      "More reliable ops; Yuma counts don't reconcile",
+      "Stronger native actions plus Voice, which Yuma lacks"
+    ],
+    theirWeaknessShort: [
+      "Needs external helpdesk, so metrics split",
+      "Text-only, no voice channel",
+      "Daily error cleanup when guidance conflicts",
+      "No Gaia equivalent, SOC 2 not verifiable"
+    ],
+    discoveryShort: [
+      "How many tools for AI data, and do numbers reconcile?",
+      "Does your AI use live ticket data or a copy?",
+      "How often does AI escalate on conflicting guidance?",
+      "How many AI tickets does your team fix daily?",
+      "What's the all-in cost: AI plus helpdesk?"
+    ],
     positioning: "An AI layer that installs on top of a helpdesk (Gorgias, Zendesk, Kustomer, Front, Gladly) rather than replacing one.",
     quickDismiss: "Yuma is an AI layer that runs on top of a helpdesk like Gorgias or Zendesk, it doesn't replace one. You're paying two vendors, two contracts, and you own the seam between them. We hear it in customer calls: data split across tools, ticket counts that don't reconcile, daily error cleanup, and conflicting knowledge forcing escalations. With Gorgias the inbox, AI, Shopify/Recharge actions, and reporting are one system, and we'll contractually guarantee 50% automation in 50 days.",
     whyWeWin: [
@@ -164,6 +264,26 @@ window.BATTLECARDS = {
     notionUrl: "https://app.notion.com/p/2b57bb86f2d94849be336e119289a6a8?pvs=1",
     lastEdited: "2026-05-25",
     name: "Digital Genius",
+    sayThis: "DigitalGenius needs their engineer for every change. Gorgias lets you own it.",
+    whyWeWinShort: [
+      "One stack, helpdesk plus AI, one dashboard",
+      "No engineer bottleneck; merchants build flows in-product",
+      "Transparent per-resolution pricing, no add-on surprises",
+      "Shopping Assistant included, not a separate add-on"
+    ],
+    theirWeaknessShort: [
+      "AI layer needs a separate helpdesk underneath",
+      "Every flow change needs their solutions engineer",
+      "No public pricing, multi-year commitments",
+      "Channel gaps, no launches since 2017"
+    ],
+    discoveryShort: [
+      "Who updated your last flow and how long live?",
+      "Can one report show automation rate and handle time?",
+      "What's your combined DG plus helpdesk annual spend?",
+      "What automation rate is DG hitting versus quoted?",
+      "Have you tested DG on voice, social, multilingual?"
+    ],
     positioning: "A decade-deep ecommerce AI layer with 50+ pre-built flows that sits on top of a separate helpdesk and requires their solutions engineer to change anything.",
     quickDismiss: "DigitalGenius has a decade of ecom AI depth and 50+ pre-built flows, that's real. But every flow change goes through their solutions engineer, so your team can't iterate, and pricing is opaque and lands as add-on surprises (one Gorgias customer paid $122K combined). DG is an AI layer on top of your helpdesk: two vendors, two contracts, two dashboards. With Gorgias, AI lives inside the helpdesk, one platform, one number, and you own the flows.",
     whyWeWin: [
@@ -196,6 +316,26 @@ window.BATTLECARDS = {
     notionUrl: "https://app.notion.com/p/3231ae2178f5809fa25dc68ef2c08674?pvs=1",
     lastEdited: "2026-07-30",
     name: "Klaviyo",
+    sayThis: "Klaviyo added support to marketing. Gorgias was built for ecommerce support.",
+    whyWeWinShort: [
+      "Built for CX with nine years on ecommerce support",
+      "You pay for problems solved, not tickets opened",
+      "No migration; Klaviyo data shows inside every ticket",
+      "CSAT surveys cover AI-resolved tickets"
+    ],
+    theirWeaknessShort: [
+      "Overage charges can't be capped, no ceiling",
+      "Saved replies work on SMS and chat only",
+      "No voice, social is Instagram DMs only",
+      "No satisfaction data on AI-resolved tickets"
+    ],
+    discoveryShort: [
+      "Three returns about one issue: one charge or three?",
+      "Can you cap overage charges in a bad month?",
+      "Which channels do you answer on and saved replies everywhere?",
+      "How do you measure satisfaction on AI-handled tickets?",
+      "How much volume is phone, and where do calls go?"
+    ],
     positioning: "A marketing platform (email/SMS) that added a helpdesk and AI agent on top; built for marketing, not ecommerce support.",
     quickDismiss: "Klaviyo was built for marketing and added support on top; Gorgias was built for ecommerce support, and that's the whole argument. They're cheaper at basically every volume, so concede price and move on. But they charge when a ticket opens, we charge when it's solved, and their overage charges switch on at purchase and can't be capped, so a bad month has no ceiling. And nobody has to move Klaviyo to work with us: we show their data inside every ticket.",
     whyWeWin: [
@@ -228,6 +368,26 @@ window.BATTLECARDS = {
     notionUrl: "https://app.notion.com/p/7a196f710588486ba250fd5c9c53ff10?pvs=1",
     lastEdited: "2026-03-19",
     name: "Intercom",
+    sayThis: "Intercom is built for SaaS. Gorgias turns Shopify support into revenue.",
+    whyWeWinShort: [
+      "Built for ecommerce with Shopify actions everywhere",
+      "AI sells visually with product cards and add-to-cart",
+      "Predictable per-conversation pricing, no per-resolution spikes",
+      "100+ native ecommerce integrations, not SaaS ones"
+    ],
+    theirWeaknessShort: [
+      "Built for SaaS; order actions need leaving helpdesk",
+      "Shopping assistant is text-only, no product images",
+      "Fin is a black box with limited tone control",
+      "Pricing complex, unpredictable, escalates as you grow"
+    ],
+    discoveryShort: [
+      "How do agents update Shopify orders, and do they leave?",
+      "What's your annual Fin spend in normal months versus peak?",
+      "Where do agents find subscription, loyalty, or return history?",
+      "Can your AI show product cards and add-to-cart in chat?",
+      "What percent of conversations drive revenue, and how tracked?"
+    ],
     positioning: "A SaaS platform built in 2011 for in-app messaging and user onboarding, with ecommerce features added later as a secondary focus.",
     quickDismiss: "Intercom's a powerful platform if you're a SaaS company needing in-app messaging and user onboarding. But for Shopify brands trying to turn support into revenue, you're paying SaaS prices for software-support workflows, not order management. With Gorgias your team gets native Shopify actions, visual product selling in chat, and 100+ ecommerce integrations, all in one tab, with predictable pricing that doesn't penalize you when the AI actually works.",
     whyWeWin: [
@@ -259,6 +419,26 @@ window.BATTLECARDS = {
     notionUrl: "https://app.notion.com/p/5dd635f9698d4e5fa98f2ce92b1bb4a9?pvs=1",
     lastEdited: "2026-06-02",
     name: "Richpanel",
+    sayThis: "Richpanel's deck caught up; their product hasn't. Ask what's live today.",
+    whyWeWinShort: [
+      "Autonomous resolution with 19 native Shopify actions",
+      "Reliable at 17,000+ brands with flexible order search",
+      "Honest ticket pricing, unlimited seats from $10",
+      "Native AI Shopping Assistant; Richpanel has none"
+    ],
+    theirWeaknessShort: [
+      "Keyword automations misfire, not intent-based resolution",
+      "Workflow glitches and weak order lookup",
+      "$100 per human seat on top of AI fee",
+      "Only $2.5M seed, no new round, small team"
+    ],
+    discoveryShort: [
+      "Does a human still click send, or does it resolve?",
+      "Are automations triggered by keywords or intent?",
+      "What exactly counts toward the 50-in-30-days guarantee?",
+      "How do you find orders without the number in subject?",
+      "Walk me through the full bill at peak?"
+    ],
     positioning: "A newly rebranded 'AI Native Helpdesk' whose marketing (70-80% autonomous, $0.25/conversation, named DTC logos) has leapfrogged a shipped product that still shows keyword-macro behavior.",
     quickDismiss: "Richpanel's deck caught up; their product hasn't. Their new marketing promises autonomous AI, but calls as recent as April and May 2026 still show keyword macros that misfire, workflow glitches, and AI that's 'honestly not that good.' Their 'cheap per conversation' headline hides a $100/seat charge for every human you keep. Acknowledge the new positioning, then ask what's live today versus on the roadmap.",
     whyWeWin: [

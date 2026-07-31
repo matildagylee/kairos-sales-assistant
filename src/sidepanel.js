@@ -17,7 +17,7 @@
     notesActions: $("notes-actions"), copyNotes: $("copy-notes"), refreshNotes: $("refresh-notes"),
   };
 
-  const settings = { apiKey: "", deepgramKey: "", model: "claude-opus-4-8" };
+  const settings = { apiKey: "", deepgramKey: "", model: "claude-sonnet-4-6" };
   const ctx = { brand: "", vertical: "", competitor: "", persona: "" };
   let history = [];
   let busy = false;
@@ -84,11 +84,11 @@
     const b = addBubble("Battlecard", "brief");
     const link = c.notionUrl ? `<a href="${esc(c.notionUrl)}" target="_blank">open card</a>` : "";
     const sub = [c.lastEdited && c.lastEdited !== "unknown" ? "updated " + esc(c.lastEdited) : "", link].filter(Boolean).join(" · ");
-    const say = (c.quickDismiss || "").split(/(?<=[.!?])\s+/)[0];
+    const say = c.sayThis || (c.quickDismiss || "").split(/(?<=[.!?])\s+/)[0];
     const sections = [
-      { k: "win", label: "Why we win", items: c.whyWeWin },
-      { k: "weak", label: "Weakness", items: c.theirWeakness },
-      { k: "disc", label: "Discovery", items: c.discoveryQuestions },
+      { k: "win", label: "Why we win", items: c.whyWeWinShort || c.whyWeWin },
+      { k: "weak", label: "Weakness", items: c.theirWeaknessShort || c.theirWeakness },
+      { k: "disc", label: "Discovery", items: c.discoveryShort || c.discoveryQuestions },
     ].filter((s) => s.items && s.items.length);
     b.innerHTML = `
       <div class="card-head">
@@ -139,14 +139,28 @@
     "- When the brand's vertical is known and a matching proof point exists, include ONE proof point (brand + metric) as a markdown link to its sourceUrl.",
     "- Only use facts from the knowledge base. If it is not covered, say so in one line.",
   ].join("\n");
+  function scopedKB() {
+    const c = BATTLECARDS[ctx.competitor];
+    const kb = { positioning: FOUNDATION.positioning, roadmap: SALES_DATA.roadmap };
+    if (c) kb.competitorInPlay = c;
+    kb.otherCompetitors = Object.entries(BATTLECARDS)
+      .filter(([k]) => k !== ctx.competitor)
+      .map(([k, v]) => ({ key: k, name: v.name, positioning: v.positioning }));
+    if (ctx.persona && FOUNDATION.personas[ctx.persona]) kb.persona = Object.assign({ name: ctx.persona }, FOUNDATION.personas[ctx.persona]);
+    const vp = verticalProof(); if (vp) kb.proofPoints = vp;
+    return JSON.stringify(kb);
+  }
   function copilotSystem() {
     const cl = contextLine();
+    const tail = (recording && transcript) ? transcript.slice(-1200) : "";
     return [
       "You are a live sales-call copilot for a Gorgias Account Executive. Gorgias is the Conversational Commerce platform for Shopify brands.",
       STYLE_RULES, "",
       "ANSWER LENGTH (hard cap): at most 3 bullets, each one short line. No intro sentence, no closing sentence, no headers. This is read mid-call in under 2 seconds. If more detail exists, make the 3rd bullet a short offer like 'Want the discovery questions?'.",
+      "TRUST: every claim must come from the knowledge base and cite its source (link the battlecard notionUrl, or a proof point sourceUrl). If it is not in the knowledge base, say 'Not in the battlecard' in one line rather than guessing.",
       "", cl ? "CURRENT CALL CONTEXT: " + cl : "",
-      "", "KNOWLEDGE BASE (JSON):", knowledgeBase(),
+      tail ? "\nWHAT IS BEING SAID ON THE CALL RIGHT NOW (use it to keep your answer relevant):\n" + tail : "",
+      "", "KNOWLEDGE BASE (JSON):", scopedKB(),
     ].join("\n");
   }
   function notesSystem() {
@@ -168,7 +182,7 @@
   }
 
   // ---------- Claude streaming ----------
-  async function callClaude(messages, onDelta, systemText) {
+  async function callClaude(messages, onDelta, systemText, maxTokens) {
     const resp = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
       headers: {
@@ -177,7 +191,7 @@
         "anthropic-version": "2023-06-01",
         "anthropic-dangerous-direct-browser-access": "true",
       },
-      body: JSON.stringify({ model: settings.model || "claude-opus-4-8", max_tokens: 1500, system: systemText, messages, stream: true }),
+      body: JSON.stringify({ model: settings.model || "claude-sonnet-4-6", max_tokens: maxTokens || 1024, system: systemText, messages, stream: true }),
     });
     if (!resp.ok) {
       let detail = resp.status + " " + resp.statusText;
@@ -211,7 +225,7 @@
     const bubble = addBubble("Gorgias Copilot", "");
     bubble.innerHTML = "<span class='meta'>thinking…</span>";
     try {
-      const text = await callClaude(history, (p) => { bubble.innerHTML = fmt(p); scrollDown(els.chat); }, copilotSystem());
+      const text = await callClaude(history, (p) => { bubble.innerHTML = fmt(p); scrollDown(els.chat); }, copilotSystem(), 400);
       history.push({ role: "assistant", content: text });
     } catch (e) { bubble.innerHTML = `<span class="meta">⚠ ${esc(e.message)}</span>`; }
     finally { busy = false; els.send.disabled = false; }
@@ -320,7 +334,7 @@
     let bubble = target.querySelector(".bubble");
     if (!bubble) { bubble = document.createElement("div"); bubble.className = "bubble"; target.innerHTML = ""; target.appendChild(bubble); }
     try {
-      await callClaude([{ role: "user", content: "Live call transcript so far:\n\n" + transcript }], (p) => { bubble.innerHTML = fmt(p); }, notesSystem());
+      await callClaude([{ role: "user", content: "Live call transcript so far:\n\n" + transcript }], (p) => { bubble.innerHTML = fmt(p); }, notesSystem(), 1200);
     } catch (e) { setRecStatus("notes error: " + e.message); }
     finally { notesBusy = false; }
   }
