@@ -82,18 +82,27 @@
     const c = BATTLECARDS[key]; if (!c) return;
     if (els.chat.querySelector(".empty")) els.chat.innerHTML = "";
     const b = addBubble("Battlecard", "brief");
-    const link = c.notionUrl ? ` · <a href="${esc(c.notionUrl)}" target="_blank">open card</a>` : "";
-    const sub = [c.lastEdited && c.lastEdited !== "unknown" ? "updated " + esc(c.lastEdited) : ""].filter(Boolean).join("");
+    const link = c.notionUrl ? `<a href="${esc(c.notionUrl)}" target="_blank">open card</a>` : "";
+    const sub = [c.lastEdited && c.lastEdited !== "unknown" ? "updated " + esc(c.lastEdited) : "", link].filter(Boolean).join(" · ");
     const say = (c.quickDismiss || "").split(/(?<=[.!?])\s+/)[0];
-    const li3 = (arr) => (arr || []).slice(0, 3).map((x) => `<li>${esc(x)}</li>`).join("");
+    const sections = [
+      { k: "win", label: "Why we win", items: c.whyWeWin },
+      { k: "weak", label: "Weakness", items: c.theirWeakness },
+      { k: "disc", label: "Discovery", items: c.discoveryQuestions },
+    ].filter((s) => s.items && s.items.length);
     b.innerHTML = `
       <div class="card-head">
         <div class="card-title">${esc(c.name)} <span class="vs">vs Gorgias</span></div>
-        <div class="card-sub">${sub}${link}</div>
+        ${sub ? `<div class="card-sub">${sub}</div>` : ""}
       </div>
       ${say ? `<div class="say"><span>Say this</span>${esc(say)}</div>` : ""}
-      <h4>Why we win</h4><ul>${li3(c.whyWeWin)}</ul>
-      <h4>Their weakness</h4><ul>${li3(c.theirWeakness)}</ul>`;
+      <div class="chips">${sections.map((s) => `<button class="exp-chip" data-k="${s.k}">${s.label}</button>`).join("")}</div>
+      ${sections.map((s) => `<div class="exp" data-k="${s.k}" hidden><ul>${s.items.slice(0, 3).map((x) => `<li>${esc(x)}</li>`).join("")}</ul></div>`).join("")}`;
+    b.querySelectorAll(".exp-chip").forEach((btn) => btn.addEventListener("click", () => {
+      const panel = b.querySelector(`.exp[data-k="${btn.dataset.k}"]`);
+      const open = !panel.hidden; panel.hidden = open; btn.classList.toggle("on", !open);
+      scrollDown(els.chat);
+    }));
     scrollDown(els.chat);
   }
 
@@ -135,7 +144,8 @@
     return [
       "You are a live sales-call copilot for a Gorgias Account Executive. Gorgias is the Conversational Commerce platform for Shopify brands.",
       STYLE_RULES, "",
-      cl ? "CURRENT CALL CONTEXT: " + cl : "",
+      "ANSWER LENGTH (hard cap): at most 3 bullets, each one short line. No intro sentence, no closing sentence, no headers. This is read mid-call in under 2 seconds. If more detail exists, make the 3rd bullet a short offer like 'Want the discovery questions?'.",
+      "", cl ? "CURRENT CALL CONTEXT: " + cl : "",
       "", "KNOWLEDGE BASE (JSON):", knowledgeBase(),
     ].join("\n");
   }
@@ -335,7 +345,7 @@
   els.vertical.addEventListener("change", (e) => { ctx.vertical = e.target.value; saveCtx(); updateSuggestions(); });
   els.competitor.addEventListener("change", (e) => {
     ctx.competitor = e.target.value; saveCtx(); updateSuggestions();
-    if (ctx.competitor) { renderCard(ctx.competitor); proactiveBrief(); }
+    if (ctx.competitor) renderCard(ctx.competitor);
   });
   els.persona.addEventListener("change", (e) => { ctx.persona = e.target.value; saveCtx(); updateSuggestions(); });
 

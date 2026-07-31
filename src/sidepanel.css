@@ -97,6 +97,13 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--r
 .empty { color: #A9AEB6; text-align: center; padding: 26px 10px; font-size: 12px; }
 .chip { display: inline-block; background: var(--accent); color: var(--accent-foreground); border-radius: 6px; padding: 2px 8px; font-size: 11px; font-weight: 600; }
 
+/* Battlecard expand chips */
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.exp-chip { background: #fff; border: 1px solid hsl(262 60% 55% / 0.3); color: var(--primary); border-radius: 14px; padding: 5px 11px; font-size: 11px; font-weight: 600; cursor: pointer; font-family: inherit; }
+.exp-chip.on { background: var(--primary); color: #fff; border-color: transparent; }
+.exp { margin-top: 6px; }
+.exp ul { margin: 4px 0 0; padding-left: 17px; }
+
 /* Suggestions */
 #suggest { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 14px 10px; flex: 0 0 auto; }
 #suggest button { background: var(--surface); border: 1px solid var(--border); color: var(--foreground); border-radius: 16px; padding: 5px 11px; font-size: 11px; cursor: pointer; font-family: inherit; }
