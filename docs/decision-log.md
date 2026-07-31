@@ -36,3 +36,15 @@ A running record of the choices we made and why. Newest at the bottom.
 - **AI chat answers:** hard cap at **3 short bullets**.
 - **Style (all output):** plain language, no jargon, no em dashes, cite + link the source Notion card, add a vertical-matched proof point when relevant.
 - **Status:** being iterated on the `output-quality` branch.
+
+## 2026-07-31 — Ways of working
+- **Phases:** each phase = its own branch (+ worktree). A phase is done only when Matilda confirms via a real test.
+- **Merge control:** always ask Matilda "merge to main? yes/no" at the end of a phase; never merge without a yes, so she can revert.
+- **Strategic decisions:** always use the AskUserQuestion tool for phase/roadmap/scope choices.
+- **Decision logging:** auto-log every decision here as we make it; if unsure whether to log something, ask.
+- Added `CLAUDE.md` (working agreement) and `planning/roadmap.md` (living roadmap).
+
+## 2026-07-31 — Phase 2 kickoff: Latency
+- **Goal:** AE gets an easy, quick answer during a live call.
+- **Done criterion:** Matilda plays a Gong call, the model runs and returns a quick usable answer.
+- **Pending input:** Matilda's latency research (to read before scoping the approach).
