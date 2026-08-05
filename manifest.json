@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Kairos",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "AI sales copilot for live calls: real-time battlecards, objection handling, vertical proof points, and auto-generated call notes.",
   "permissions": ["storage", "sidePanel", "tabCapture", "tabs", "activeTab"],
   "host_permissions": ["https://api.anthropic.com/*", "https://api.deepgram.com/*"],
