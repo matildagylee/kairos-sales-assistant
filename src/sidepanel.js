@@ -88,16 +88,21 @@
     const b = addBubble("Battlecard", "brief");
     const link = c.notionUrl ? ` · <a href="${esc(c.notionUrl)}" target="_blank">open card</a>` : "";
     const sub = [c.lastEdited && c.lastEdited !== "unknown" ? "updated " + esc(c.lastEdited) : ""].filter(Boolean).join("");
-    const say = (c.quickDismiss || "").split(/(?<=[.!?])\s+/)[0];
-    const li3 = (arr) => (arr || []).slice(0, 3).map((x) => `<li>${esc(x)}</li>`).join("");
+    // Keep it glanceable: one clause per point, capped length, 2 points per section.
+    const tight = (s, max = 84) => {
+      s = (s || "").trim().split(/(?<=[.!?])\s/)[0];
+      return s.length > max ? s.slice(0, max).replace(/[\s,;:]+\S*$/, "") + "…" : s;
+    };
+    const say = tight(c.quickDismiss || "", 118);
+    const li2 = (arr) => (arr || []).slice(0, 2).map((x) => `<li>${esc(tight(x))}</li>`).join("");
     b.innerHTML = `
       <div class="card-head">
         <div class="card-title">${esc(c.name)} <span class="vs">vs Gorgias</span></div>
         <div class="card-sub">${sub}${link}</div>
       </div>
       ${say ? `<div class="say"><span>Say this</span>${esc(say)}</div>` : ""}
-      <h4>Why we win</h4><ul>${li3(c.whyWeWin)}</ul>
-      <h4>Their weakness</h4><ul>${li3(c.theirWeakness)}</ul>`;
+      <h4>Why we win</h4><ul>${li2(c.whyWeWin)}</ul>
+      <h4>Their weakness</h4><ul>${li2(c.theirWeakness)}</ul>`;
     scrollDown(els.chat);
   }
 
@@ -144,9 +149,11 @@
     ].filter(Boolean).join(" ");
   }
   const STYLE_RULES = [
-    "STYLE (strict):",
-    "- Plain language. No jargon, no buzzwords, no filler. Write like you are talking to a busy rep on a call.",
-    "- Bullet points, short. Lead with the answer. No preamble like 'Here is' or 'Sure'.",
+    "STYLE (strict, this is for a rep glancing mid-call):",
+    "- At most 3 bullets. Each bullet is ONE line, 14 words max. No sub-bullets, no intro line, no wrap-up.",
+    "- Lead with the single strongest point. Cut anything a rep would not say out loud.",
+    "- No redundancy: never make the same point twice or in two ways, and never restate the question.",
+    "- Plain, spoken language. No jargon, no buzzwords, no filler, no preamble like 'Here is' or 'Sure'.",
     "- Never use em dashes. Use commas, parentheses, or short sentences.",
     "- Cite your sources. When you use a battlecard claim, link to that competitor's Notion card using its notionUrl as a markdown link, e.g. [Intercom battlecard](URL). Mention when it was last updated.",
     "- When the brand's vertical is known and a matching proof point exists, include ONE proof point (brand + metric) as a markdown link to its sourceUrl.",
@@ -260,7 +267,7 @@
     const bubble = addBubble("Gorgias Copilot", "");
     bubble.innerHTML = "<span class='meta'>thinking…</span>";
     try {
-      const text = await callClaude(history, (p) => { bubble.innerHTML = fmt(p); scrollDown(els.chat); }, copilotSystem());
+      const text = await callClaude(history, (p) => { bubble.innerHTML = fmt(p); scrollDown(els.chat); }, copilotSystem(), { maxTokens: opts.maxTokens || 320 });
       history.push({ role: "assistant", content: text });
     } catch (e) { bubble.innerHTML = `<span class="meta">⚠ ${esc(e.message)}</span>`; }
     finally { busy = false; els.send.disabled = false; }
