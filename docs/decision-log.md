@@ -48,3 +48,11 @@ A running record of the choices we made and why. Newest at the bottom.
 - **Goal:** AE gets an easy, quick answer during a live call.
 - **Done criterion:** Matilda plays a Gong call, the model runs and returns a quick usable answer.
 - **Pending input:** Matilda's latency research (to read before scoping the approach).
+
+## 2026-08-05 — Redesign: Dark focus HUD (branch `phase-redesign-dark-hud`)
+- **Trigger:** Matilda felt the light UI looked dated/plain (a white form).
+- **Decision:** Restyle the panel as a **dark focus HUD** (chosen via AskUserQuestion over "refined light" and "Gorgias brand-forward"). Charcoal surface, brightened Gorgias violet `#9D7DF0` accent, glowing tab indicator, elevated cards. This intentionally **supersedes the 2026-07-31 "mirror Gaia light UI" decision** for the panel chrome. Rationale: sits better beside a dark Meet/Zoom window, reads as a premium copilot, and fixes the "dated" feel.
+- **Follow-up (same session):** Matilda asked for **more gradient + glass**. Added a layered multi-radial violet/indigo gradient background (fixed-attachment) and **glassmorphism** (translucent `backdrop-filter` blur) on the header, controls, settings, cards, "Say this" panel, and composer.
+- **Scope:** CSS-only (`src/sidepanel.css`); no markup or logic changes, so it composes with any branch. Kept every selector.
+- **Details:** `color-scheme: dark` so native selects/scrollbars render dark; the black Gorgias logo is inverted to white via `filter: brightness(0) invert(1)` (renders correctly); `min-width:0` on grid inputs + `overflow-x:hidden` prevent select overflow at narrow panel widths. Verified via headless Chrome screenshot at ~400px (Chrome's default side-panel width).
+- **Status:** syntax/visual-checked in headless render, **awaiting Matilda's real test** in the loaded extension. Not merged.
