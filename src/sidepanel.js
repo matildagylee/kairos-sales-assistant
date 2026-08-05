@@ -40,6 +40,7 @@
     els.competitor.value = ctx.competitor || ""; els.persona.value = ctx.persona || "";
     updateBanner(); updateSuggestions();
     if (!els.chat.children.length) renderEmpty();
+    if (settings.apiKey) warmCache();
   });
   function saveSettings() {
     settings.apiKey = els.apiKey.value.trim();
@@ -47,6 +48,7 @@
     settings.model = els.model.value;
     chrome.storage.local.set({ gsccSettings: settings });
     updateBanner();
+    if (settings.apiKey) warmCache();
   }
   function saveCtx() { chrome.storage.local.set({ gsccCtx: ctx }); }
 
@@ -124,6 +126,14 @@
       roadmap: SALES_DATA.roadmap,
     });
   }
+  // Byte-identical, memoized. This is the cached prefix block shared by the copilot
+  // and the notes prompts, so both hit the same prompt cache. Never interpolate
+  // per-call context in here or the cache breaks.
+  let _kbBlock = null;
+  function kbBlock() {
+    if (_kbBlock == null) _kbBlock = "KNOWLEDGE BASE (JSON):\n" + knowledgeBase();
+    return _kbBlock;
+  }
   function contextLine() {
     const c = BATTLECARDS[ctx.competitor];
     return [
@@ -144,17 +154,24 @@
     "- Roadmap: you may reference roadmap.shippedRecently and roadmap.nextThreeMonths freely. NEVER promise or give a date for roadmap.horizon items, they are exploratory bets, not commitments. If asked about something only in horizon, say it is being explored, no timeline.",
     "- Only use facts from the knowledge base. If it is not covered, say so in one line.",
   ].join("\n");
+  // System prompts are returned as an array of blocks. Block 0 is the big static
+  // knowledge base, marked cache_control:ephemeral so Anthropic caches it and skips
+  // re-reading it every turn (the main TTFT win). Blocks after it are small and
+  // uncached: role instructions, then the per-call context that changes each turn.
   function copilotSystem() {
     const cl = contextLine();
-    return [
+    const instr = [
       "You are a live sales-call copilot for a Gorgias Account Executive. Gorgias is the Conversational Commerce platform for Shopify brands.",
-      STYLE_RULES, "",
-      cl ? "CURRENT CALL CONTEXT: " + cl : "",
-      "", "KNOWLEDGE BASE (JSON):", knowledgeBase(),
+      STYLE_RULES,
     ].join("\n");
+    return [
+      { type: "text", text: kbBlock(), cache_control: { type: "ephemeral" } },
+      { type: "text", text: instr },
+      { type: "text", text: "CURRENT CALL CONTEXT: " + (cl || "none set") },
+    ];
   }
   function notesSystem() {
-    return [
+    const instr = [
       "You are a note-taker for a Gorgias sales rep, working from a live call transcript.",
       "Produce clean, current call notes. Rewrite the full notes each time from the whole transcript.",
       STYLE_RULES, "",
@@ -166,13 +183,19 @@
       "- **Proof point to send** — if the vertical matches one, a brand + metric with its source link",
       "- **Action items**",
       "- **Suggested next step**",
-      "", "CURRENT CALL CONTEXT: " + (contextLine() || "none set"),
-      "", "KNOWLEDGE BASE (JSON):", knowledgeBase(),
     ].join("\n");
+    return [
+      { type: "text", text: kbBlock(), cache_control: { type: "ephemeral" } },
+      { type: "text", text: instr },
+      { type: "text", text: "CURRENT CALL CONTEXT: " + (contextLine() || "none set") },
+    ];
   }
 
   // ---------- Claude streaming ----------
-  async function callClaude(messages, onDelta, systemText) {
+  async function callClaude(messages, onDelta, system, opts) {
+    opts = opts || {};
+    const t0 = performance.now();
+    let ttft = 0, usage = null;
     const resp = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
       headers: {
@@ -181,7 +204,7 @@
         "anthropic-version": "2023-06-01",
         "anthropic-dangerous-direct-browser-access": "true",
       },
-      body: JSON.stringify({ model: settings.model || "claude-opus-4-8", max_tokens: 1500, system: systemText, messages, stream: true }),
+      body: JSON.stringify({ model: settings.model || "claude-opus-4-8", max_tokens: opts.maxTokens || 1500, system, messages, stream: true }),
     });
     if (!resp.ok) {
       let detail = resp.status + " " + resp.statusText;
@@ -197,10 +220,32 @@
       for (const line of lines) {
         if (!line.startsWith("data:")) continue;
         const data = line.slice(5).trim(); if (!data) continue;
-        try { const ev = JSON.parse(data); if (ev.type === "content_block_delta" && ev.delta.type === "text_delta") { full += ev.delta.text; onDelta(full); } } catch (e) {}
+        try {
+          const ev = JSON.parse(data);
+          if (ev.type === "message_start" && ev.message && ev.message.usage) usage = ev.message.usage;
+          if (ev.type === "content_block_delta" && ev.delta.type === "text_delta") {
+            if (!ttft) ttft = Math.round(performance.now() - t0);
+            full += ev.delta.text; onDelta(full);
+          }
+        } catch (e) {}
       }
     }
+    // Phase 1 telemetry: confirm the cache is being hit and watch TTFT.
+    const cr = usage && usage.cache_read_input_tokens || 0;
+    const cw = usage && usage.cache_creation_input_tokens || 0;
+    console.log(`[kairos] TTFT ${ttft}ms | cache_read ${cr} | cache_write ${cw} | input ${usage && usage.input_tokens || 0} | ${cr > 0 ? "CACHE HIT" : cw > 0 ? "cache primed" : "no cache"}`);
     return full;
+  }
+
+  // Prime the prompt cache so the first real question hits a warm cache. Sends a
+  // throwaway 1-token request with the copilot system (its block 0 is the same
+  // cached KB block the notes prompt uses, so this warms both paths).
+  async function warmCache() {
+    if (!settings.apiKey) return;
+    try {
+      await callClaude([{ role: "user", content: "ready" }], () => {}, copilotSystem(), { maxTokens: 1 });
+      console.log("[kairos] cache warmed");
+    } catch (e) { /* non-fatal */ }
   }
 
   // ---------- Copilot ----------
@@ -261,9 +306,21 @@
     if (!settings.apiKey) { openSettings(); return; }
     if (!settings.deepgramKey) { setRecStatus("Add a Deepgram key in settings first."); openSettings(); return; }
     setRecStatus("starting…");
+    warmCache(); // keep the prompt cache warm for the notes/copilot calls during the call
     try {
       const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
-      const streamId = await chrome.tabCapture.getMediaStreamId({ targetTabId: tab.id });
+      if (!tab) { setRecStatus("Open the call tab, then click Start notes."); return; }
+      const tabUrl = tab.url || "";
+      if (/^(chrome|edge|about|chrome-extension|devtools):/i.test(tabUrl)) {
+        setRecStatus("Can't record this page. Click the call tab (e.g. Google Meet), then Start notes."); return;
+      }
+      let streamId;
+      try {
+        streamId = await chrome.tabCapture.getMediaStreamId({ targetTabId: tab.id });
+      } catch (grantErr) {
+        setRecStatus("Click the Kairos toolbar icon on the call tab, then Start notes.");
+        return;
+      }
       tabStream = await navigator.mediaDevices.getUserMedia({ audio: { mandatory: { chromeMediaSource: "tab", chromeMediaSourceId: streamId } } });
       try { micStream = await navigator.mediaDevices.getUserMedia({ audio: true }); } catch (e) { micStream = null; }
 
