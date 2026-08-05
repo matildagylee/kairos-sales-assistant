@@ -331,16 +331,31 @@
       if (/^(chrome|edge|about|chrome-extension|devtools):/i.test(tabUrl)) {
         setRecStatus("Can't record this page. Click the call tab (e.g. Google Meet), then Start notes."); return;
       }
-      let streamId;
       try {
-        streamId = await chrome.tabCapture.getMediaStreamId({ targetTabId: tab.id });
+        // Preferred path: the toolbar-icon grant (activeTab) lets us capture silently.
+        const streamId = await chrome.tabCapture.getMediaStreamId({ targetTabId: tab.id });
+        tabStream = await navigator.mediaDevices.getUserMedia({ audio: { mandatory: { chromeMediaSource: "tab", chromeMediaSourceId: streamId } } });
         setPerm("granted", "✓ Capture allowed on this tab.");
       } catch (grantErr) {
-        setPerm("denied", "✗ Permission not granted. Click the Kairos icon in the toolbar on this tab, then Start notes.");
-        setRecStatus("Click the Kairos toolbar icon on the call tab, then Start notes.");
-        return;
+        // Fallback that needs NO toolbar click: Chrome's own tab-share picker.
+        setRecStatus("pick your call tab and turn on ‘Also share tab audio’…");
+        try {
+          const disp = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
+          disp.getVideoTracks().forEach((t) => t.stop()); // we only want the audio
+          if (!disp.getAudioTracks().length) {
+            disp.getTracks().forEach((t) => t.stop());
+            setPerm("denied", "✗ No tab audio shared. Start again and tick ‘Also share tab audio’.");
+            setRecStatus("no audio was shared — try again and tick ‘Also share tab audio’.");
+            return;
+          }
+          tabStream = disp;
+          setPerm("granted", "✓ Capturing the shared tab.");
+        } catch (pickErr) {
+          setPerm("denied", "✗ Capture not allowed. Either click the Kairos icon on the call tab, or pick the tab when prompted.");
+          setRecStatus("capture was cancelled.");
+          return;
+        }
       }
-      tabStream = await navigator.mediaDevices.getUserMedia({ audio: { mandatory: { chromeMediaSource: "tab", chromeMediaSourceId: streamId } } });
       try { micStream = await navigator.mediaDevices.getUserMedia({ audio: true }); } catch (e) { micStream = null; }
 
       audioCtx = new AudioContext();
