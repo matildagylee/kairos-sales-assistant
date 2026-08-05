@@ -15,7 +15,7 @@
     brand: $("brand"), vertical: $("vertical"), competitor: $("competitor"), persona: $("persona"),
     chat: $("chat"), suggest: $("suggest"), input: $("input"), send: $("send"),
     copilotView: $("copilot-view"), notesView: $("notes-view"),
-    recBtn: $("rec-btn"), recStatus: $("rec-status"), consent: $("consent"),
+    recBtn: $("rec-btn"), recStatus: $("rec-status"), consent: $("consent"), perm: $("perm"),
     notesOut: $("notes-out"), transcriptWrap: $("transcript-wrap"), transcript: $("transcript"),
     notesActions: $("notes-actions"), copyNotes: $("copy-notes"), refreshNotes: $("refresh-notes"),
   };
@@ -39,7 +39,7 @@
     els.model.value = settings.model || "claude-opus-4-8";
     els.brand.value = ctx.brand || ""; els.vertical.value = ctx.vertical || "";
     els.competitor.value = ctx.competitor || ""; els.persona.value = ctx.persona || "";
-    updateBanner(); updateSuggestions();
+    updateBanner(); updateSuggestions(); refreshPerm();
     if (!els.chat.children.length) renderEmpty();
     if (settings.apiKey) warmCache();
   });
@@ -334,7 +334,9 @@
       let streamId;
       try {
         streamId = await chrome.tabCapture.getMediaStreamId({ targetTabId: tab.id });
+        setPerm("granted", "✓ Capture allowed on this tab.");
       } catch (grantErr) {
+        setPerm("denied", "✗ Permission not granted. Click the Kairos icon in the toolbar on this tab, then Start notes.");
         setRecStatus("Click the Kairos toolbar icon on the call tab, then Start notes.");
         return;
       }
@@ -420,8 +422,43 @@
     document.querySelectorAll("#tabs button").forEach((b) => b.classList.toggle("on", b.dataset.tab === name));
     els.copilotView.style.display = name === "copilot" ? "flex" : "none";
     els.notesView.style.display = name === "notes" ? "flex" : "none";
+    if (name === "notes") refreshPerm();
   }
   document.querySelectorAll("#tabs button").forEach((b) => (b.onclick = () => switchTab(b.dataset.tab)));
+
+  // ---------- Capture-permission status ----------
+  function setPerm(state, msg) {
+    if (!els.perm) return;
+    els.perm.className = "perm " + state;   // granted | denied | na
+    els.perm.textContent = msg;
+  }
+  function activeTab() {
+    return new Promise((res) => {
+      try { chrome.tabs.query({ active: true, lastFocusedWindow: true }, (t) => res((t && t[0]) || null)); }
+      catch (e) { res(null); }
+    });
+  }
+  async function refreshPerm() {
+    if (recording) { setPerm("granted", "✓ Capturing this tab."); return; }
+    const tab = await activeTab();
+    const url = (tab && tab.url) || "";
+    if (!tab || tab.id == null || /^(chrome|edge|about|devtools|chrome-extension):/i.test(url) || url.includes("chrome.google.com/webstore")) {
+      setPerm("na", "Open this panel on your call tab (Meet, Zoom web, Teams web) to take notes.");
+      return;
+    }
+    try {
+      chrome.runtime.sendMessage({ type: "kairos-is-invoked", tabId: tab.id }, (resp) => {
+        if (chrome.runtime.lastError) { setPerm("na", "Checking capture access…"); return; }
+        if (resp && resp.invoked) setPerm("granted", "✓ Capture allowed on this tab. You can Start notes.");
+        else setPerm("denied", "✗ Not allowed yet. Click the Kairos icon in the toolbar on this tab.");
+      });
+    } catch (e) { setPerm("na", "Checking capture access…"); }
+  }
+  // Re-check when the user comes back to the panel (e.g. right after clicking the icon)
+  // and when the background worker tells us the icon was clicked.
+  window.addEventListener("focus", refreshPerm);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) refreshPerm(); });
+  chrome.runtime.onMessage.addListener((msg) => { if (msg && msg.type === "kairos-invoked") refreshPerm(); });
 
   // ---------- Banner / settings ----------
   function updateBanner() { els.banner.style.display = settings.apiKey ? "none" : "block"; }
