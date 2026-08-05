@@ -5,6 +5,7 @@
   const PROOFPOINTS = window.PROOFPOINTS || {};
   const CUSTOMER_STORIES = window.CUSTOMER_STORIES || [];
   const PODCAST = window.PODCAST || [];
+  const GONG_QUOTES = window.GONG_QUOTES || {};
   const SALES_DATA = window.SALES_DATA || { roadmap: {} };
 
   const $ = (id) => document.getElementById(id);
@@ -95,6 +96,12 @@
     };
     const say = tight(c.quickDismiss || "", 118);
     const li2 = (arr) => (arr || []).slice(0, 2).map((x) => `<li>${esc(tight(x))}</li>`).join("");
+    const gq = (GONG_QUOTES[key] || [])[0];
+    const gqSize = gq && gq.size && gq.size !== "unknown" ? ` (${esc(gq.size.replace(/\s*\(.*\)/, ""))})` : "";
+    const gqLink = gq && gq.gongUrl ? ` <a href="${esc(gq.gongUrl)}" target="_blank">Gong</a>` : "";
+    const switchLine = gq
+      ? `<div class="switch"><span>Why they left ${esc(c.name)}</span><b>${esc(gq.brand)}</b>${gqSize}: &ldquo;${esc(tight(gq.quote, 132))}&rdquo;${gqLink}</div>`
+      : "";
     b.innerHTML = `
       <div class="card-head">
         <div class="card-title">${esc(c.name)} <span class="vs">vs Gorgias</span></div>
@@ -102,7 +109,8 @@
       </div>
       ${say ? `<div class="say"><span>Say this</span>${esc(say)}</div>` : ""}
       <h4>Why we win</h4><ul>${li2(c.whyWeWin)}</ul>
-      <h4>Their weakness</h4><ul>${li2(c.theirWeakness)}</ul>`;
+      <h4>Their weakness</h4><ul>${li2(c.theirWeakness)}</ul>
+      ${switchLine}`;
     scrollDown(els.chat);
   }
 
@@ -128,6 +136,7 @@
       proofPoints: PROOFPOINTS,
       customerStories: CUSTOMER_STORIES,
       podcast: PODCAST,
+      gongQuotes: GONG_QUOTES,
       roadmap: SALES_DATA.roadmap,
     });
   }
@@ -158,6 +167,7 @@
     "- Cite your sources. When you use a battlecard claim, link to that competitor's Notion card using its notionUrl as a markdown link, e.g. [Intercom battlecard](URL). Mention when it was last updated.",
     "- When the brand's vertical is known and a matching proof point exists, include ONE proof point (brand + metric) as a markdown link to its sourceUrl.",
     "- For a fuller story, use customerStories: prefer one whose vertical matches the brand, or whose prevHelpdesk matches the competitor being switched from. Give the brand, the headline metric, one short line, and a markdown link to its url.",
+    "- When a competitor is in play and gongQuotes has an entry for it, you may name-drop ONE real switcher: the brand and its size, plus the verbatim quote (in quotes, do not alter it) and link the Gong call using its gongUrl. Only use it if it fits the moment. Never invent a quote or a brand.",
     "- Roadmap: you may reference roadmap.shippedRecently and roadmap.nextThreeMonths freely. NEVER promise or give a date for roadmap.horizon items, they are exploratory bets, not commitments. If asked about something only in horizon, say it is being explored, no timeline.",
     "- Only use facts from the knowledge base. If it is not covered, say so in one line.",
   ].join("\n");
