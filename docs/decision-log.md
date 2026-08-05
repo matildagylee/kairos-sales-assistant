@@ -48,3 +48,12 @@ A running record of the choices we made and why. Newest at the bottom.
 - **Goal:** AE gets an easy, quick answer during a live call.
 - **Done criterion:** Matilda plays a Gong call, the model runs and returns a quick usable answer.
 - **Pending input:** Matilda's latency research (to read before scoping the approach).
+
+## 2026-08-05 — Knowledge expansion: customer stories + podcast + roadmap (branch `phase-knowledge-stories-roadmap`)
+- **What:** Added three content sources to the baked knowledge base, wired into the copilot + notes prompts.
+- **Customer stories (`data/customerstories.js`):** curated ~27 flagship stories from gorgias.com/customers (sitemap has ~100 unique; chose curated + richer over all-100-compact). Each has brand, vertical (aligned to the panel's vertical dropdown keys), segment, `prevHelpdesk` (tool they switched from), products, headline metric, a short challenge->result story, a real quote + link. Chosen for vertical / competitor / segment diversity so any prospect has a match. Kept `proofpoints.js` as the quick one-line-metric layer.
+- **Podcast (`data/podcast.js`):** 6 Behind the Inbox episodes, lightweight (title, brand, theme, one takeaway, link), tagged as operator POV, not hard proof. Guest names were templated in page metadata so we left them out.
+- **Roadmap (`data/roadmap.js`):** replaced the 3-item placeholder with the latest Notion refresh (2026-06-26), tiered into `shippedRecently`, `nextThreeMonths`, `horizon` (next/later). Internal PM names stripped; reframed in customer-benefit language. **Call-safety:** a `guidance` field + STYLE rule let the copilot reference shipped + next-3-months freely but NEVER promise or date `horizon` items (the Notion doc marks them "not for customer conversations").
+- **Wiring:** new `<script>` tags in `sidepanel.html`; `knowledgeBase()` now includes `customerStories`, `podcast`, `roadmap` (object shape); two STYLE rules; a `matchingStory()` helper adds a "Customer story that fits this brand" suggestion chip when the vertical or competitor matches.
+- **Why curated over all-100:** a live-call copilot needs glanceable, high-signal stories, not exhaustive coverage.
+- **Status:** syntax-checked, all data files load clean, **awaiting Matilda's real test** (set a vertical/competitor, ask for a story + roadmap tease, confirm the right one is pulled and no over-promising). Not merged.

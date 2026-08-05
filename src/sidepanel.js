@@ -3,7 +3,9 @@
   const BATTLECARDS = window.BATTLECARDS || {};
   const FOUNDATION = window.FOUNDATION || { positioning: {}, personas: {} };
   const PROOFPOINTS = window.PROOFPOINTS || {};
-  const SALES_DATA = window.SALES_DATA || { roadmap: [] };
+  const CUSTOMER_STORIES = window.CUSTOMER_STORIES || [];
+  const PODCAST = window.PODCAST || [];
+  const SALES_DATA = window.SALES_DATA || { roadmap: {} };
 
   const $ = (id) => document.getElementById(id);
   const els = {
@@ -103,12 +105,22 @@
     if (v && PROOFPOINTS[v]) return PROOFPOINTS[v];
     return null;
   }
+  function matchingStory() {
+    const c = BATTLECARDS[ctx.competitor];
+    const compName = c && c.name ? c.name.toLowerCase() : "";
+    return CUSTOMER_STORIES.find((st) =>
+      (ctx.vertical && st.vertical === ctx.vertical) ||
+      (compName && st.prevHelpdesk && compName.includes(st.prevHelpdesk.toLowerCase()))
+    ) || null;
+  }
   function knowledgeBase() {
     return JSON.stringify({
       positioning: FOUNDATION.positioning,
       competitors: BATTLECARDS,
       personas: FOUNDATION.personas,
       proofPoints: PROOFPOINTS,
+      customerStories: CUSTOMER_STORIES,
+      podcast: PODCAST,
       roadmap: SALES_DATA.roadmap,
     });
   }
@@ -128,6 +140,8 @@
     "- Never use em dashes. Use commas, parentheses, or short sentences.",
     "- Cite your sources. When you use a battlecard claim, link to that competitor's Notion card using its notionUrl as a markdown link, e.g. [Intercom battlecard](URL). Mention when it was last updated.",
     "- When the brand's vertical is known and a matching proof point exists, include ONE proof point (brand + metric) as a markdown link to its sourceUrl.",
+    "- For a fuller story, use customerStories: prefer one whose vertical matches the brand, or whose prevHelpdesk matches the competitor being switched from. Give the brand, the headline metric, one short line, and a markdown link to its url.",
+    "- Roadmap: you may reference roadmap.shippedRecently and roadmap.nextThreeMonths freely. NEVER promise or give a date for roadmap.horizon items, they are exploratory bets, not commitments. If asked about something only in horizon, say it is being explored, no timeline.",
     "- Only use facts from the knowledge base. If it is not covered, say so in one line.",
   ].join("\n");
   function copilotSystem() {
@@ -218,6 +232,7 @@
     if (c) { s.push(`Handle the price objection vs ${c.name}`); s.push(`Best discovery question for ${c.name}`); }
     if (ctx.persona) s.push(`Top pain points for ${ctx.persona}`);
     if (verticalProof()) s.push("Proof point for this vertical");
+    if (matchingStory()) s.push("Customer story that fits this brand");
     s.push("What's on the roadmap I can tease?");
     if (!c) s.push("Give me the 20-second Gorgias pitch");
     els.suggest.innerHTML = "";
