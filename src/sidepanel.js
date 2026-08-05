@@ -228,15 +228,26 @@
     run(`My opening play against ${c.name}${brand}${who}: the one-line dismiss, the sharpest wedge, one discovery question. Keep it to 4 bullets.`, { showUser: false });
   }
   function updateSuggestions() {
-    const s = []; const c = BATTLECARDS[ctx.competitor];
-    if (c) { s.push(`Handle the price objection vs ${c.name}`); s.push(`Best discovery question for ${c.name}`); }
-    if (ctx.persona) s.push(`Top pain points for ${ctx.persona}`);
-    if (verticalProof()) s.push("Proof point for this vertical");
-    if (matchingStory()) s.push("Customer story that fits this brand");
-    s.push("What's on the roadmap I can tease?");
-    if (!c) s.push("Give me the 20-second Gorgias pitch");
+    const c = BATTLECARDS[ctx.competitor];
+    const brand = (ctx.brand || "").trim();
+    // Always four quick questions: competitor stacking, customer proof, roadmap, objection.
+    const s = [
+      // 1. Competitor stacking
+      c ? `How do we stack up vs ${c.name}? Give me the head-to-head.`
+        : "How does Gorgias stack up vs the main competitors?",
+      // 2. Customer proof
+      (matchingStory() || verticalProof())
+        ? `Customer proof that fits ${brand || "this brand"}`
+        : "Give me a customer proof point to use",
+      // 3. Roadmap
+      "What's on the roadmap I can tease?",
+      // 4. Objection handling
+      c ? `Top objection vs ${c.name} and how to answer it`
+        : (ctx.persona ? `Top objection for ${ctx.persona} and how to answer it`
+                       : "Handle the price objection"),
+    ];
     els.suggest.innerHTML = "";
-    s.slice(0, 4).forEach((q) => { const b = document.createElement("button"); b.textContent = q; b.onclick = () => { switchTab("copilot"); run(q); }; els.suggest.appendChild(b); });
+    s.forEach((q) => { const b = document.createElement("button"); b.textContent = q; b.onclick = () => { switchTab("copilot"); run(q); }; els.suggest.appendChild(b); });
   }
 
   // ---------- Live call notes ----------
