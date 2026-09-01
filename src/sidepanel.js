@@ -15,7 +15,7 @@
     brand: $("brand"), vertical: $("vertical"), competitor: $("competitor"), persona: $("persona"),
     chat: $("chat"), suggest: $("suggest"), input: $("input"), send: $("send"),
     copilotView: $("copilot-view"), notesView: $("notes-view"),
-    recBtn: $("rec-btn"), recStatus: $("rec-status"), consent: $("consent"), perm: $("perm"),
+    recBtn: $("rec-btn"), recStatus: $("rec-status"), consent: $("consent"), perm: $("perm"), level: $("level"),
     notesOut: $("notes-out"), transcriptWrap: $("transcript-wrap"), transcript: $("transcript"),
     notesActions: $("notes-actions"), copyNotes: $("copy-notes"), refreshNotes: $("refresh-notes"),
   };
@@ -315,6 +315,7 @@
   // ---------- Live call notes ----------
   let recording = false, dgSocket = null, mediaRecorder = null, audioCtx = null, keepAlive = null, notesTimer = null;
   let transcript = "", lastNotesLen = 0, notesBusy = false, tabStream = null, micStream = null;
+  let levelTimer = null, heardAudio = false;
 
   function setRecStatus(msg) { els.recStatus.textContent = msg || ""; }
 
@@ -365,6 +366,31 @@
       tabSrc.connect(audioCtx.destination); // keep the call audible to the rep
       if (micStream) audioCtx.createMediaStreamSource(micStream).connect(dest);
 
+      // Live audio meter, so the rep can see capture is actually working (independent
+      // of whether anyone is talking yet). Reads the combined stream we send to Deepgram.
+      heardAudio = false;
+      const analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 256;
+      audioCtx.createMediaStreamSource(dest.stream).connect(analyser);
+      const buf = new Uint8Array(analyser.frequencyBinCount);
+      if (els.level) els.level.style.display = "block";
+      levelTimer = setInterval(() => {
+        analyser.getByteFrequencyData(buf);
+        let sum = 0; for (let i = 0; i < buf.length; i++) sum += buf[i];
+        const avg = sum / buf.length;                 // 0..~128 typical
+        const bars = Math.min(10, Math.round(avg / 6));
+        if (avg > 4) heardAudio = true;
+        if (els.level) {
+          const on = "█".repeat(bars), off = "░".repeat(10 - bars);
+          els.level.textContent = (avg > 4 ? "🔊 hearing audio  " : (heardAudio ? "… quiet  " : "… no audio yet  ")) + on + off;
+          els.level.className = "level" + (avg > 4 ? " live" : "");
+        }
+      }, 200);
+
+      // If the rep ends the Chrome tab-share (or the tab closes), stop cleanly.
+      const at = tabStream.getAudioTracks()[0];
+      if (at) at.addEventListener("ended", () => { if (recording) stopRecording(); });
+
       const url = "wss://api.deepgram.com/v1/listen?model=nova-3&smart_format=true&punctuate=true&interim_results=false";
       dgSocket = new WebSocket(url, ["token", settings.deepgramKey]);
       dgSocket.onopen = () => {
@@ -388,9 +414,10 @@
       dgSocket.onclose = () => { if (recording) setRecStatus("disconnected"); };
 
       recording = true;
+      setPerm("granted", "✓ Capturing this call. Notes appear once people talk.");
       els.recBtn.textContent = "■ Stop notes"; els.recBtn.classList.add("live");
       els.consent.style.display = "block"; els.transcriptWrap.style.display = "block"; els.notesActions.style.display = "flex";
-      els.notesOut.innerHTML = `<div class="empty">Listening… first notes in ~30s.</div>`;
+      els.notesOut.innerHTML = `<div class="empty">Listening… notes appear ~30s after someone speaks. Watch the audio meter to confirm sound is coming through.</div>`;
       notesTimer = setInterval(refreshNotes, 30000);
     } catch (e) {
       setRecStatus("could not start: " + e.message);
@@ -401,6 +428,8 @@
   function cleanupAudio() {
     if (keepAlive) clearInterval(keepAlive), (keepAlive = null);
     if (notesTimer) clearInterval(notesTimer), (notesTimer = null);
+    if (levelTimer) clearInterval(levelTimer), (levelTimer = null);
+    if (els.level) els.level.style.display = "none";
     try { if (mediaRecorder && mediaRecorder.state !== "inactive") mediaRecorder.stop(); } catch (e) {}
     try { if (dgSocket && dgSocket.readyState === 1) { dgSocket.send(JSON.stringify({ type: "CloseStream" })); dgSocket.close(); } } catch (e) {}
     [tabStream, micStream].forEach((s) => { if (s) s.getTracks().forEach((t) => t.stop()); });
