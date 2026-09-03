@@ -1,6 +1,6 @@
 # Kairos
 
-Kairos is a Chrome **side panel** that rides along on live sales calls (Google Meet or any page). It gives reps a Claude-powered copilot grounded in the live Notion battlecards, plus **auto-generated call notes** transcribed from the call audio. Styled to mirror the **Gaia UI** design system (Inter, Gorgias purple), with the Gorgias logo.
+Kairos is a Chrome **side panel** that rides along on live sales calls (Google Meet or any page). It gives reps a Claude-powered copilot grounded in the live Notion battlecards, plus **auto-generated call notes** transcribed from the call audio. Styled in the **Gorgias brand** — coral on ink, modern and flat — with the Gorgias logo.
 
 ## What it does
 - **Copilot chat** — ask anything in plain language; answers come back as tight bullets, cite the exact Notion battlecard (with link + last-updated date), and never invent facts.
@@ -47,8 +47,8 @@ assets/icons/
   gorgias-logo.png
 docs/
   decision-log.md      running record of decisions
-  GAIA-THEME.md         extracted Gaia UI design tokens
+  THEME.md             Gorgias brand design tokens
 ```
 
 ## Design
-Mirrors `gorgias/gaia` → `gaia_ui` (see `docs/GAIA-THEME.md`): Inter font, Gorgias purple `#7B52D9`, 10px cards / 8px controls, soft shadows. Logo is the standard Gorgias logo.
+Gorgias brand, modern and dark (see `docs/THEME.md`): Inter / Inter Tight, coral accent `#FF7A5A` on Gorgias ink `#1A1E23`, flat surfaces, hairline borders, 12px cards / 9px controls, one soft shadow. Coral is the only accent. Logo is the standard Gorgias logo.

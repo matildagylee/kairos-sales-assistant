@@ -9,7 +9,7 @@ Status key: ✅ done · 🔧 in progress · ⏭ next · 💡 backlog (needs vali
 ## ✅ Phase 0 — Foundation (on `main`)
 - Chrome MV3 side panel, Claude copilot, proactive battlecard, proof points, live call notes (Deepgram).
 - Content baked from Notion battlecards, gorgias-foundation, gorgias.com/customers.
-- Structured folder; mirrors Gaia UI design.
+- Structured folder; Gorgias brand design (coral on ink).
 
 ## ✅ Phase 1 — Output quality (branch `output-quality`, NOT yet merged)
 - One-move battlecard + tap-to-expand chips; AI-tightened bullets.

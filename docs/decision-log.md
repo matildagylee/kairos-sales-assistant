@@ -65,3 +65,11 @@ A running record of the choices we made and why. Newest at the bottom.
 - **Scope:** CSS-only (`src/sidepanel.css`); no markup or logic changes, so it composes with any branch. Kept every selector.
 - **Details:** `color-scheme: dark` so native selects/scrollbars render dark; the black Gorgias logo is inverted to white via `filter: brightness(0) invert(1)` (renders correctly); `min-width:0` on grid inputs + `overflow-x:hidden` prevent select overflow at narrow panel widths. Verified via headless Chrome screenshot at ~400px (Chrome's default side-panel width).
 - **Status:** syntax/visual-checked in headless render, **awaiting Matilda's real test** in the loaded extension. Not merged.
+
+## 2026-09-03 — Redesign: Gorgias brand (coral), off Gaia
+- **Trigger:** Matilda asked to move off the Gaia palette to non-Gaia Gorgias, "more modern and sleek."
+- **Decision:** Replace the violet/Gaia HUD accent with the **Gorgias brand** — coral `#FF7A5A` (hover `#FF8E70`, deep `#E8542E`) as the single accent on Gorgias ink `#1A1E23`/`#14171B`. Text on coral is warm near-black ink, not white. This supersedes the 2026-08-05 "brightened Gorgias violet" accent decision.
+- **Sleek pass:** removed the layered multi-radial violet glow + glassmorphism-everywhere; now flat solid surfaces, hairline borders, one soft card shadow, a single faint coral glow at the top. Radii tightened to 12px cards / 9px controls. Display font set to Inter Tight for the wordmark + card titles. Recording pulse simplified to a coral-free destructive ring.
+- **Scope:** CSS-only (`src/sidepanel.css`); every selector kept, no markup/logic change. Verified JS/data carry no hardcoded colors.
+- **Docs:** `docs/GAIA-THEME.md` replaced by `docs/THEME.md` (Gorgias brand tokens); README + roadmap updated off Gaia.
+- **Status:** awaiting Matilda's real test in the loaded extension.
